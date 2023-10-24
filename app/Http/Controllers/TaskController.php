@@ -8,13 +8,21 @@ use App\Http\Resources\TaskCollection;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class TaskController extends Controller
 {
     //
     public function index(): TaskCollection
     {
-        return new TaskCollection(Task::all());
+        $task = QueryBuilder::for(Task::class)
+                            ->allowedFilters('is_done')
+                            ->defaultSort('-created_at')
+                            ->allowedSorts(['title', 'is_done', 'created_at'])
+                            ->paginate();
+
+        return new TaskCollection($task);
     }
 
     public function show(Request $request, Task $task): TaskResource
@@ -38,7 +46,7 @@ class TaskController extends Controller
         return new TaskResource($task);
     }
 
-    public function destroy(Task $task)
+    public function destroy(Task $task): Response
     {
         $task->delete();
 
