@@ -23,7 +23,8 @@ class Task extends Model
     protected $fillable = [
         'title',
         'is_done',
-        'creator_id'
+        'creator_id',
+        'project_id'
     ];
 
     public function creator(): BelongsTo
@@ -36,6 +37,11 @@ class Task extends Model
         static::addGlobalScope('creator', function(Builder $builder) {
             $builder->where('creator_id', Auth::id());
         });
+    }
+
+    public function project() : BelongsTo
+    {
+        return $this->belongsTo(Project::class);
     }
 
 }
